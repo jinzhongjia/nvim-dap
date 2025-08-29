@@ -413,6 +413,15 @@ do
   M.listeners.on_config["dap.expand_variable"] = function(config)
     return vim.tbl_map(expand_config_variables, config)
   end
+  
+  -- Auto-handle processId: 0 for attach configurations
+  -- This maintains compatibility with VSCode's behavior where processId: 0 triggers a process picker
+  M.listeners.on_config["dap.process_id_zero"] = function(config)
+    if config.request == "attach" and config.processId == 0 then
+      config.processId = "${command:pickProcess}"
+    end
+    return config
+  end
 end
 
 

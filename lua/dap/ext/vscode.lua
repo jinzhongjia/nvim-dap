@@ -165,6 +165,13 @@ function M._load_json(jsonstr)
   local configs = {}
   for _, config in ipairs(data.configurations or {}) do
     config = lift(config, sysname)
+    
+    -- Auto-convert processId: 0 to ${command:pickProcess} for attach requests
+    -- This maintains compatibility with VSCode's behavior
+    if config.request == "attach" and config.processId == 0 then
+      config.processId = "${command:pickProcess}"
+    end
+    
     if (has_inputs) then
       config = setmetatable(config, {
         __call = function()
